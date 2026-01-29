@@ -22,7 +22,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Mount secret and write to .env file
-RUN --mount=type=secret,id=envfile cat /run/secrets/envfile > /app/.env || echo "No secret mounted"
+RUN --mount=type=secret,id=envfile \
+    if [ -f /run/secrets/envfile ]; then \
+      cat /run/secrets/envfile > /app/.env; \
+    else \
+      echo "ERROR: envfile secret not mounted" && exit 1; \
+    fi
 
 # Expose the port (default FastAPI/uvicorn port)
 EXPOSE 8000
