@@ -1,4 +1,4 @@
-
+# syntax=docker/dockerfile:1
 FROM python:3.12-slim
 
 # Upgrade pip and system packages to reduce vulnerabilities
@@ -20,6 +20,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the code
 COPY . .
+
+# Mount secret and write to .env file
+RUN --mount=type=secret,id=envfile cat /run/secrets/envfile > /app/.env || echo "No secret mounted"
 
 # Expose the port (default FastAPI/uvicorn port)
 EXPOSE 8000
